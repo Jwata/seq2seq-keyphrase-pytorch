@@ -30,7 +30,7 @@ opt = parser.parse_args()
 def main():
     test_dataset_names = ['inspec', 'nus', 'semeval', 'krapivin', 'duc']
     src_fields = ['title', 'abstract']
-    trg_fields = ['keyword']
+    trg_fields = ['keywords']
 
     print("Loading Vocab...")
     opt.vocab_path = os.path.join(opt.output_path_prefix, 'kp20k', 'kp20k.vocab.pt')
@@ -39,8 +39,8 @@ def main():
     print('Vocab size = %d' % len(vocab))
 
     for test_dataset_name in test_dataset_names:
-        opt.source_train_file = os.path.join(opt.source_dataset_root_dir, test_dataset_name, '%s_training.json' % (test_dataset_name))
-        opt.source_test_file = os.path.join(opt.source_dataset_root_dir, test_dataset_name, '%s_testing.json' % (test_dataset_name))
+        opt.source_train_file = os.path.join(opt.source_dataset_root_dir, '%s_valid.json' % (test_dataset_name))
+        opt.source_test_file = os.path.join(opt.source_dataset_root_dir, '%s_test.json' % (test_dataset_name))
 
         # output path for exporting the processed dataset
         opt.output_path = os.path.join(opt.output_path_prefix, test_dataset_name)
@@ -48,37 +48,41 @@ def main():
             os.makedirs(opt.output_path)
 
         print("Loading training/validation/test data...")
-        tokenized_train_pairs = pykp.io.load_src_trgs_pairs(source_json_path=opt.source_train_file,
-                                                            dataset_name=test_dataset_name,
-                                                            src_fields=src_fields,
-                                                            trg_fields=trg_fields,
-                                                            valid_check=False,
-                                                            opt=opt)
+        if os.path.isfile(opt.source_train_file):
+            tokenized_train_pairs = pykp.io.load_src_trgs_pairs(source_json_path=opt.source_train_file,
+                                                                dataset_name=test_dataset_name,
+                                                                src_fields=src_fields,
+                                                                trg_fields=trg_fields,
+                                                                valid_check=False,
+                                                                opt=opt)
 
-        tokenized_test_pairs = pykp.io.load_src_trgs_pairs(source_json_path=opt.source_test_file,
-                                                           dataset_name=test_dataset_name,
-                                                           src_fields=src_fields,
-                                                           trg_fields=trg_fields,
-                                                           valid_check=False,
-                                                           opt=opt)
+        if os.path.isfile(opt.source_test_file):
+            tokenized_test_pairs = pykp.io.load_src_trgs_pairs(source_json_path=opt.source_test_file,
+                                                               dataset_name=test_dataset_name,
+                                                               src_fields=src_fields,
+                                                               trg_fields=trg_fields,
+                                                               valid_check=False,
+                                                               opt=opt)
 
 
         print("Exporting complete dataset")
-        pykp.io.process_and_export_dataset(tokenized_train_pairs,
-                                           word2id, id2word,
-                                           opt,
-                                           opt.output_path,
-                                           dataset_name=test_dataset_name,
-                                           data_type='train',
-                                           include_original=True)
+        if tokenized_train_pairs:
+            pykp.io.process_and_export_dataset(tokenized_train_pairs,
+                                               word2id, id2word,
+                                               opt,
+                                               opt.output_path,
+                                               dataset_name=test_dataset_name,
+                                               data_type='train',
+                                               include_original=True)
 
-        pykp.io.process_and_export_dataset(tokenized_test_pairs,
-                                           word2id, id2word,
-                                           opt,
-                                           opt.output_path,
-                                           dataset_name=test_dataset_name,
-                                           data_type='test',
-                                           include_original=True)
+        if tokenized_test_pairs:
+            pykp.io.process_and_export_dataset(tokenized_test_pairs,
+                                               word2id, id2word,
+                                               opt,
+                                               opt.output_path,
+                                               dataset_name=test_dataset_name,
+                                               data_type='test',
+                                               include_original=True)
 
 
 if __name__ == "__main__":
