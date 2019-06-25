@@ -18,6 +18,6 @@ workon pytorch10
 # Run the job
 export ATTENTION="general"
 export EXP_NAME="rnn.kp20k.multi_test.$ATTENTION"
-export ROOT_PATH="${HOME}/Development/seq2seq-keyphrase-pytorch"
+export ROOT_PATH="/work"
 export DATA_NAME="kp20k"
-python -m train -data_path_prefix "data/$DATA_NAME/$DATA_NAME" -vocab_path "data/$DATA_NAME/$DATA_NAME.vocab.pt" -exp "$DATA_NAME" -exp_path "$ROOT_PATH/exp/$EXP_NAME/%s.%s" -batch_size 32 -bidirectional -run_valid_every 200 -save_model_every 200 -bidirectional -copy_attention -attention_mode "$ATTENTION" -copy_mode "$ATTENTION"  -beam_size 32 -beam_search_batch_size 3 -train_ml -must_teacher_forcing -must_appear_in_src
+python -m train -data_path_prefix "data/$DATA_NAME/$DATA_NAME" -vocab_path "data/$DATA_NAME/$DATA_NAME.vocab.pt" -exp "$DATA_NAME" -exp_path "$ROOT_PATH/exp/$EXP_NAME/%s.%s" -batch_size 32 -bidirectional -run_valid_every 1000 -save_model_every 1000 -bidirectional -copy_attention -attention_mode "$ATTENTION" -copy_mode "$ATTENTION"  -beam_size 32 -beam_search_batch_size 3 -train_ml -must_teacher_forcing -must_appear_in_src
